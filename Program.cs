@@ -1084,7 +1084,7 @@ void MenuAtenciones()
 
 
 // =====================================================
-// 6. MODULO DE HISTORIAL MEDICO (Punto 3.6)
+// 6. MODULO DE HISTORIAL MEDICO
 // =====================================================
 
 void MenuHistorial()
@@ -1234,7 +1234,7 @@ int ContarConsultasRecursivo(string cedula, int posicion)
 
 
 // =====================================================
-// 7. MODULO DE ESTADISTICAS (Punto 3.7)
+// 7. MODULO DE ESTADISTICAS
 // =====================================================
 
 void MenuEstadisticas()
@@ -1422,7 +1422,7 @@ void MostrarDiagnosticoMasFrecuente()
 
 
 // =====================================================
-// 8. MODULO DE REPORTES (Punto 3.8)
+// 8. MODULO DE REPORTES
 // =====================================================
 
 void MenuReportes()
@@ -1504,7 +1504,7 @@ void ReporteEmergenciasPendientes()
     Console.ReadKey();
 }
 
-// Función recursiva por niveles de prioridad (1 al 4)
+// Función recursiva por niveles de prioridad 
 void MostrarEmergenciasPendientesRecursivo(int nivelPrioridad)
 {
     if (nivelPrioridad > 4)
