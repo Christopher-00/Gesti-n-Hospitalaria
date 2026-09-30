@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 const int MAX = 100;
 
@@ -43,6 +43,16 @@ string[] emeMedico = new string[MAX];
 string[] emeEstado = new string[MAX];
 int totalEmergencias = 0;
 
+// ATENCIONES (Punto 3.5)
+string[] atenPaciente = new string[MAX];
+string[] atenMedico = new string[MAX];
+string[] atenFecha = new string[MAX];
+string[] atenDiagnostico = new string[MAX];
+string[] atenTratamiento = new string[MAX];
+string[] atenMedicamentos = new string[MAX];
+string[] atenEstadoPost = new string[MAX];
+int totalAtenciones = 0;
+
 
 // =====================================================
 // PROGRAMA PRINCIPAL
@@ -86,15 +96,17 @@ do
             MenuEmergencias();
             break;
         case 5:
-
-        case 6:
-
-        case 7:
-
-        case 8:
-
+            MenuAtenciones();
             break;
-
+        case 6:
+            MenuHistorial();
+            break;
+        case 7:
+            MenuEstadisticas();
+            break;
+        case 8:
+            MenuReportes();
+            break;
         case 9:
             Console.WriteLine("Sistema finalizado.");
             break;
@@ -152,13 +164,13 @@ void PrecargarDatos()
     medEspecialidad[0] = "Medicina General";
     medCodigo[0] = "MED-01";
     medEstado[0] = "Disponible";
-    medAtendidos[0] = 0;
+    medAtendidos[0] = 1;
 
     medNombre[1] = "Dra. Carmen Rivas";
     medEspecialidad[1] = "Pediatria";
     medCodigo[1] = "MED-02";
     medEstado[1] = "Disponible";
-    medAtendidos[1] = 0;
+    medAtendidos[1] = 1;
 
     medNombre[2] = "Dr. Fernando Ceron";
     medEspecialidad[2] = "Traumatologia";
@@ -185,6 +197,34 @@ void PrecargarDatos()
     pacIngreso[1] = "2026-09-05 10:15";
 
     totalPacientes = 2;
+
+    // Citas precargadas
+    citaPaciente[0] = "05241234-5";
+    citaMedico[0] = "MED-01";
+    citaFecha[0] = DateTime.Now.ToString("yyyy-MM-dd");
+    citaHora[0] = "09:00";
+    citaMotivo[0] = "Control anual";
+    citaEstado[0] = "Pendiente";
+    totalCitas = 1;
+
+    // Atenciones iniciales de prueba
+    atenPaciente[0] = "05241234-5";
+    atenMedico[0] = "MED-01";
+    atenFecha[0] = "2026-09-02 08:30";
+    atenDiagnostico[0] = "Gripe comun";
+    atenTratamiento[0] = "Reposo e hidratacion";
+    atenMedicamentos[0] = "Paracetamol 500mg";
+    atenEstadoPost[0] = "Dado de alta";
+
+    atenPaciente[1] = "04123987-1";
+    atenMedico[1] = "MED-02";
+    atenFecha[1] = "2026-09-06 11:00";
+    atenDiagnostico[1] = "Faringitis";
+    atenTratamiento[1] = "Antibiotico 7 dias";
+    atenMedicamentos[1] = "Amoxicilina 500mg";
+    atenEstadoPost[1] = "Estable";
+
+    totalAtenciones = 2;
 }
 
 
@@ -432,7 +472,6 @@ void RegistrarMedico()
     Console.WriteLine("Medico registrado.");
     Console.ReadKey();
 }
-
 
 int BuscarMedicoRecursivo(string codigo, int posicion)
 {
@@ -779,7 +818,6 @@ void MenuEmergencias()
             case 3:
                 VerColaEmergencias();
                 break;
-
         }
 
     } while (opcion != 4);
@@ -852,10 +890,6 @@ void IngresarEmergencia()
 
 void OrdenarEmergencias()
 {
-    // Prioridad 1 primero.
-    // Si dos pacientes tienen la misma prioridad,
-    // no se intercambian y conservan orden de llegada.
-
     for (int i = 0; i < totalEmergencias - 1; i++)
     {
         for (int j = 0;
@@ -957,7 +991,6 @@ void VerColaEmergencias()
     Console.ReadKey();
 }
 
-// RECORRIDO RECURSIVO DE LA COLA
 void MostrarEmergenciasRecursivo(int posicion)
 {
     if (posicion >= totalEmergencias)
@@ -973,4 +1006,590 @@ void MostrarEmergenciasRecursivo(int posicion)
         $"Espera: {emeEspera[posicion]} min");
 
     MostrarEmergenciasRecursivo(posicion + 1);
+}
+
+
+// =====================================================
+// 5. MODULO DE ATENCIONES
+// =====================================================
+
+void MenuAtenciones()
+{
+    Console.Clear();
+    Console.WriteLine("===== REGISTRAR ATENCION MEDICA =====");
+
+    if (totalAtenciones >= MAX)
+    {
+        Console.WriteLine("Capacidad maxima de atenciones alcanzada.");
+        Console.ReadKey();
+        return;
+    }
+
+    string cedula = LeerTexto("Cedula del paciente: ");
+    int posPac = BuscarPacienteRecursivo(cedula, 0);
+
+    if (posPac == -1)
+    {
+        Console.WriteLine("Paciente no encontrado en el sistema.");
+        Console.ReadKey();
+        return;
+    }
+
+    string codMedico = LeerTexto("Codigo del medico que atendio: ");
+    int posMed = BuscarMedicoRecursivo(codMedico, 0);
+
+    if (posMed == -1)
+    {
+        Console.WriteLine("Medico no encontrado.");
+        Console.ReadKey();
+        return;
+    }
+
+    atenPaciente[totalAtenciones] = cedula;
+    atenMedico[totalAtenciones] = codMedico;
+    atenFecha[totalAtenciones] = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+    atenDiagnostico[totalAtenciones] = LeerTexto("Diagnostico: ");
+    atenTratamiento[totalAtenciones] = LeerTexto("Tratamiento indicado: ");
+    atenMedicamentos[totalAtenciones] = LeerTexto("Medicamentos recetados: ");
+
+    Console.WriteLine("Estado tras la atencion:");
+    Console.WriteLine("1. Estable");
+    Console.WriteLine("2. En observacion");
+    Console.WriteLine("3. Dado de alta");
+    Console.WriteLine("4. Remitido");
+    int opcEstado = LeerEntero("Seleccione opcion: ", 1, 4);
+
+    atenEstadoPost[totalAtenciones] =
+        opcEstado == 1 ? "Estable" :
+        opcEstado == 2 ? "En observacion" :
+        opcEstado == 3 ? "Dado de alta" : "Remitido";
+
+    // Actualiza contador de pacientes atendidos por el médico
+    medAtendidos[posMed]++;
+    totalAtenciones++;
+
+    // Si el paciente tenía una cita pendiente o confirmada, se marca atendida
+    for (int i = 0; i < totalCitas; i++)
+    {
+        if (citaPaciente[i] == cedula && (citaEstado[i] == "Pendiente" || citaEstado[i] == "Confirmada"))
+        {
+            citaEstado[i] = "Atendida";
+            break;
+        }
+    }
+
+    Console.WriteLine("\nAtencion medica registrada exitosamente.");
+    Console.ReadKey();
+}
+
+
+// =====================================================
+// 6. MODULO DE HISTORIAL MEDICO (Punto 3.6)
+// =====================================================
+
+void MenuHistorial()
+{
+    int opcion;
+
+    do
+    {
+        Console.Clear();
+        Console.WriteLine("===== HISTORIAL MEDICO =====");
+        Console.WriteLine("1. Consultar atenciones de un paciente");
+        Console.WriteLine("2. Buscar diagnosticos especificos");
+        Console.WriteLine("3. Ver tratamientos previos de un paciente");
+        Console.WriteLine("4. Total de consultas de un paciente");
+        Console.WriteLine("5. Regresar");
+
+        opcion = LeerEntero("Opcion: ", 1, 5);
+
+        switch (opcion)
+        {
+            case 1:
+                ConsultarAtencionesPaciente();
+                break;
+            case 2:
+                BuscarDiagnosticosHistorial();
+                break;
+            case 3:
+                MostrarTratamientosPaciente();
+                break;
+            case 4:
+                ContarConsultasPaciente();
+                break;
+        }
+
+    } while (opcion != 5);
+}
+
+void ConsultarAtencionesPaciente()
+{
+    Console.Clear();
+    string cedula = LeerTexto("Cedula del paciente: ");
+
+    if (BuscarPacienteRecursivo(cedula, 0) == -1)
+    {
+        Console.WriteLine("El paciente no existe en el sistema.");
+        Console.ReadKey();
+        return;
+    }
+
+    Console.WriteLine($"\n--- HISTORIAL DE ATENCIONES PARA: {cedula} ---");
+    bool encontrado = false;
+    RecorrerHistorialRecursivo(cedula, 0, ref encontrado);
+
+    if (!encontrado)
+        Console.WriteLine("No se encontraron registros medicos para este paciente.");
+
+    Console.ReadKey();
+}
+
+// Recorrido recursivo del historial médico de un paciente
+void RecorrerHistorialRecursivo(string cedula, int posicion, ref bool encontrado)
+{
+    if (posicion >= totalAtenciones)
+        return;
+
+    if (atenPaciente[posicion].Equals(cedula, StringComparison.OrdinalIgnoreCase))
+    {
+        Console.WriteLine($"\nRegistro #{posicion + 1}");
+        Console.WriteLine($"Fecha: {atenFecha[posicion]}");
+        Console.WriteLine($"Medico: {atenMedico[posicion]}");
+        Console.WriteLine($"Diagnostico: {atenDiagnostico[posicion]}");
+        Console.WriteLine($"Tratamiento: {atenTratamiento[posicion]}");
+        Console.WriteLine($"Medicamentos: {atenMedicamentos[posicion]}");
+        Console.WriteLine($"Estado: {atenEstadoPost[posicion]}");
+        encontrado = true;
+    }
+
+    RecorrerHistorialRecursivo(cedula, posicion + 1, ref encontrado);
+}
+
+void BuscarDiagnosticosHistorial()
+{
+    Console.Clear();
+    string termino = LeerTexto("Termino de diagnostico a buscar: ");
+    bool encontrado = false;
+
+    Console.WriteLine($"\n--- RESULTADOS PARA EL DIAGNOSTICO: '{termino}' ---");
+    for (int i = 0; i < totalAtenciones; i++)
+    {
+        if (atenDiagnostico[i].IndexOf(termino, StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            Console.WriteLine($"Paciente: {atenPaciente[i]} | Fecha: {atenFecha[i]} | Diagnostico: {atenDiagnostico[i]} | Medico: {atenMedico[i]}");
+            encontrado = true;
+        }
+    }
+
+    if (!encontrado)
+        Console.WriteLine("No se hallaron coincidencias en los diagnosticos.");
+
+    Console.ReadKey();
+}
+
+void MostrarTratamientosPaciente()
+{
+    Console.Clear();
+    string cedula = LeerTexto("Cedula del paciente: ");
+    bool encontrado = false;
+
+    Console.WriteLine($"\n--- TRATAMIENTOS PREVIOS ({cedula}) ---");
+    for (int i = 0; i < totalAtenciones; i++)
+    {
+        if (atenPaciente[i].Equals(cedula, StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine($"Fecha: {atenFecha[i]} | Diagnostico: {atenDiagnostico[i]}");
+            Console.WriteLine($"Tratamiento: {atenTratamiento[i]}");
+            Console.WriteLine($"Medicamentos: {atenMedicamentos[i]}");
+            Console.WriteLine("---------------------------------------------");
+            encontrado = true;
+        }
+    }
+
+    if (!encontrado)
+        Console.WriteLine("No se encontraron tratamientos previos.");
+
+    Console.ReadKey();
+}
+
+void ContarConsultasPaciente()
+{
+    Console.Clear();
+    string cedula = LeerTexto("Cedula del paciente: ");
+    int consultas = ContarConsultasRecursivo(cedula, 0);
+
+    Console.WriteLine($"\nEl paciente con cedula {cedula} ha tenido {consultas} consulta(s) en total.");
+    Console.ReadKey();
+}
+
+// Función recursiva para contar consultas de un paciente
+int ContarConsultasRecursivo(string cedula, int posicion)
+{
+    if (posicion >= totalAtenciones)
+        return 0;
+
+    int coincide = atenPaciente[posicion].Equals(cedula, StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+    return coincide + ContarConsultasRecursivo(cedula, posicion + 1);
+}
+
+
+// =====================================================
+// 7. MODULO DE ESTADISTICAS (Punto 3.7)
+// =====================================================
+
+void MenuEstadisticas()
+{
+    Console.Clear();
+    Console.WriteLine("==============================================");
+    Console.WriteLine("           ESTADISTICAS DEL HOSPITAL");
+    Console.WriteLine("==============================================");
+
+    MostrarMedicoMasAtenciones();
+    MostrarEspecialidadMayorDemanda();
+    MostrarPromedioEdadPacientes();
+    MostrarPacientesAtendidosPorDia();
+    MostrarPromedioEsperaEmergencias();
+    MostrarDiagnosticoMasFrecuente();
+
+    Console.WriteLine("==============================================");
+    Console.ReadKey();
+}
+
+void MostrarMedicoMasAtenciones()
+{
+    if (totalMedicos == 0)
+    {
+        Console.WriteLine("1. Medico con mayor pacientes: No hay datos.");
+        return;
+    }
+
+    int mayorIndex = 0;
+    for (int i = 1; i < totalMedicos; i++)
+    {
+        if (medAtendidos[i] > medAtendidos[mayorIndex])
+            mayorIndex = i;
+    }
+
+    Console.WriteLine($"1. Medico con mayor pacientes atendidos: {medNombre[mayorIndex]} ({medAtendidos[mayorIndex]} pacientes)");
+}
+
+void MostrarEspecialidadMayorDemanda()
+{
+    if (totalCitas == 0 && totalEmergencias == 0)
+    {
+        Console.WriteLine("2. Especialidad con mayor demanda: Sin registros suficientes.");
+        return;
+    }
+
+    // Tomar especialidades de médicos disponibles como catálogo base
+    string mejorEsp = "No determinada";
+    int maxDemanda = -1;
+
+    for (int i = 0; i < totalMedicos; i++)
+    {
+        string esp = medEspecialidad[i];
+        int conteo = 0;
+
+        for (int c = 0; c < totalCitas; c++)
+        {
+            int posMed = BuscarMedicoRecursivo(citaMedico[c], 0);
+            if (posMed != -1 && medEspecialidad[posMed].Equals(esp, StringComparison.OrdinalIgnoreCase))
+                conteo++;
+        }
+
+        for (int e = 0; e < totalEmergencias; e++)
+        {
+            if (emeEspecialidad[e].Equals(esp, StringComparison.OrdinalIgnoreCase))
+                conteo++;
+        }
+
+        if (conteo > maxDemanda)
+        {
+            maxDemanda = conteo;
+            mejorEsp = esp;
+        }
+    }
+
+    Console.WriteLine($"2. Especialidad con mayor demanda: {mejorEsp} ({maxDemanda} solicitudes entre citas/emergencias)");
+}
+
+void MostrarPromedioEdadPacientes()
+{
+    if (totalPacientes == 0)
+    {
+        Console.WriteLine("3. Promedio de edad: Sin pacientes.");
+        return;
+    }
+
+    double suma = 0;
+    for (int i = 0; i < totalPacientes; i++)
+        suma += pacEdad[i];
+
+    double promedio = suma / totalPacientes;
+    Console.WriteLine($"3. Promedio de edad de pacientes registrados: {promedio:F1} anios");
+}
+
+void MostrarPacientesAtendidosPorDia()
+{
+    Console.WriteLine("4. Cantidad de atenciones por dia:");
+    if (totalAtenciones == 0)
+    {
+        Console.WriteLine("   Sin atenciones registradas.");
+        return;
+    }
+
+    string[] fechasUnicas = new string[MAX];
+    int[] conteoFechas = new int[MAX];
+    int totalFechas = 0;
+
+    for (int i = 0; i < totalAtenciones; i++)
+    {
+        string fechaDia = atenFecha[i].Length >= 10 ? atenFecha[i].Substring(0, 10) : atenFecha[i];
+        int pos = -1;
+
+        for (int j = 0; j < totalFechas; j++)
+        {
+            if (fechasUnicas[j] == fechaDia)
+            {
+                pos = j;
+                break;
+            }
+        }
+
+        if (pos != -1)
+            conteoFechas[pos]++;
+        else
+        {
+            fechasUnicas[totalFechas] = fechaDia;
+            conteoFechas[totalFechas] = 1;
+            totalFechas++;
+        }
+    }
+
+    for (int i = 0; i < totalFechas; i++)
+        Console.WriteLine($"   * {fechasUnicas[i]}: {conteoFechas[i]} paciente(s)");
+}
+
+void MostrarPromedioEsperaEmergencias()
+{
+    int atendidas = 0;
+    double sumaEspera = 0;
+
+    for (int i = 0; i < totalEmergencias; i++)
+    {
+        if (emeEstado[i] == "Atendido")
+        {
+            sumaEspera += emeEspera[i];
+            atendidas++;
+        }
+    }
+
+    if (atendidas == 0)
+        Console.WriteLine("5. Tiempo promedio de espera en emergencias: No hay emergencias atendidas aun.");
+    else
+        Console.WriteLine($"5. Tiempo promedio de espera en emergencias: {(sumaEspera / atendidas):F1} minutos");
+}
+
+void MostrarDiagnosticoMasFrecuente()
+{
+    if (totalAtenciones == 0)
+    {
+        Console.WriteLine("6. Diagnostico mas frecuente: No hay datos.");
+        return;
+    }
+
+    string masFrecuente = atenDiagnostico[0];
+    int maxOcurrencias = 0;
+
+    for (int i = 0; i < totalAtenciones; i++)
+    {
+        int cuenta = 0;
+        for (int j = 0; j < totalAtenciones; j++)
+        {
+            if (atenDiagnostico[i].Equals(atenDiagnostico[j], StringComparison.OrdinalIgnoreCase))
+                cuenta++;
+        }
+
+        if (cuenta > maxOcurrencias)
+        {
+            maxOcurrencias = cuenta;
+            masFrecuente = atenDiagnostico[i];
+        }
+    }
+
+    Console.WriteLine($"6. Diagnostico mas frecuente: {masFrecuente} ({maxOcurrencias} veces)");
+}
+
+
+// =====================================================
+// 8. MODULO DE REPORTES (Punto 3.8)
+// =====================================================
+
+void MenuReportes()
+{
+    int opcion;
+
+    do
+    {
+        Console.Clear();
+        Console.WriteLine("===== REPORTES GENERALES =====");
+        Console.WriteLine("1. Pacientes pendientes por atender");
+        Console.WriteLine("2. Emergencias pendientes por prioridad (Recursivo)");
+        Console.WriteLine("3. Citas programadas para el dia de hoy");
+        Console.WriteLine("4. Medicos disponibles");
+        Console.WriteLine("5. Resumen general del hospital");
+        Console.WriteLine("6. Regresar");
+
+        opcion = LeerEntero("Opcion: ", 1, 6);
+
+        switch (opcion)
+        {
+            case 1:
+                ReportePacientesPendientes();
+                break;
+            case 2:
+                ReporteEmergenciasPendientes();
+                break;
+            case 3:
+                ReporteCitasDelDia();
+                break;
+            case 4:
+                ReporteMedicosDisponibles();
+                break;
+            case 5:
+                ReporteResumenHospital();
+                break;
+        }
+
+    } while (opcion != 6);
+}
+
+void ReportePacientesPendientes()
+{
+    Console.Clear();
+    Console.WriteLine("===== PACIENTES PENDIENTES (CITAS Y EMERGENCIAS) =====");
+    bool hayPendientes = false;
+
+    Console.WriteLine("\n-- Citas Pendientes/Confirmadas --");
+    for (int i = 0; i < totalCitas; i++)
+    {
+        if (citaEstado[i] == "Pendiente" || citaEstado[i] == "Confirmada")
+        {
+            Console.WriteLine($"Cita Fecha: {citaFecha[i]} {citaHora[i]} | Paciente ID: {citaPaciente[i]} | Doctor: {citaMedico[i]} | Estado: {citaEstado[i]}");
+            hayPendientes = true;
+        }
+    }
+
+    Console.WriteLine("\n-- Emergencias en Espera --");
+    for (int i = 0; i < totalEmergencias; i++)
+    {
+        if (emeEstado[i] == "Pendiente")
+        {
+            Console.WriteLine($"Prioridad {emePrioridad[i]} | Paciente ID: {emePaciente[i]} | Hora llegada: {emeHora[i]} | Especialidad: {emeEspecialidad[i]}");
+            hayPendientes = true;
+        }
+    }
+
+    if (!hayPendientes)
+        Console.WriteLine("No hay pacientes en cola de atencion.");
+
+    Console.ReadKey();
+}
+
+void ReporteEmergenciasPendientes()
+{
+    Console.Clear();
+    Console.WriteLine("===== EMERGENCIAS PENDIENTES POR PRIORIDAD (RECURSIVO) =====");
+    MostrarEmergenciasPendientesRecursivo(1);
+    Console.ReadKey();
+}
+
+// Función recursiva por niveles de prioridad (1 al 4)
+void MostrarEmergenciasPendientesRecursivo(int nivelPrioridad)
+{
+    if (nivelPrioridad > 4)
+        return;
+
+    string etiqueta = nivelPrioridad switch
+    {
+        1 => "Nivel 1 - Critico",
+        2 => "Nivel 2 - Urgente",
+        3 => "Nivel 3 - Moderado",
+        _ => "Nivel 4 - Leve"
+    };
+
+    Console.WriteLine($"\n>>> {etiqueta} <<<");
+    bool hay = false;
+
+    for (int i = 0; i < totalEmergencias; i++)
+    {
+        if (emePrioridad[i] == nivelPrioridad && emeEstado[i] == "Pendiente")
+        {
+            Console.WriteLine($"   Paciente: {emePaciente[i]} | Especialidad: {emeEspecialidad[i]} | Hora de entrada: {emeHora[i]} | Medico: {emeMedico[i]}");
+            hay = true;
+        }
+    }
+
+    if (!hay)
+        Console.WriteLine("   (Sin emergencias en este nivel)");
+
+    MostrarEmergenciasPendientesRecursivo(nivelPrioridad + 1);
+}
+
+void ReporteCitasDelDia()
+{
+    Console.Clear();
+    string hoy = DateTime.Now.ToString("yyyy-MM-dd");
+    Console.WriteLine($"===== CITAS DEL DIA ({hoy}) =====");
+    bool hay = false;
+
+    for (int i = 0; i < totalCitas; i++)
+    {
+        if (citaFecha[i] == hoy)
+        {
+            Console.WriteLine($"Hora: {citaHora[i]} | Paciente: {citaPaciente[i]} | Medico: {citaMedico[i]} | Motivo: {citaMotivo[i]} | Estado: {citaEstado[i]}");
+            hay = true;
+        }
+    }
+
+    if (!hay)
+        Console.WriteLine("No hay citas registradas para la fecha de hoy.");
+
+    Console.ReadKey();
+}
+
+void ReporteMedicosDisponibles()
+{
+    Console.Clear();
+    Console.WriteLine("===== MEDICOS DISPONIBLES EN TURNO =====");
+    bool hay = false;
+
+    for (int i = 0; i < totalMedicos; i++)
+    {
+        if (medEstado[i].Equals("Disponible", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine($"Codigo: {medCodigo[i]} | Nombre: {medNombre[i]} | Especialidad: {medEspecialidad[i]} | Pacientes atendidos: {medAtendidos[i]}");
+            hay = true;
+        }
+    }
+
+    if (!hay)
+        Console.WriteLine("No hay medicos en estado 'Disponible' en este momento.");
+
+    Console.ReadKey();
+}
+
+void ReporteResumenHospital()
+{
+    Console.Clear();
+    Console.WriteLine("==============================================");
+    Console.WriteLine("          RESUMEN GENERAL DEL HOSPITAL");
+    Console.WriteLine("==============================================");
+    Console.WriteLine($"Total de pacientes registrados : {totalPacientes}");
+    Console.WriteLine($"Total de medicos registrados    : {totalMedicos}");
+    Console.WriteLine($"Total de citas gestionadas      : {totalCitas}");
+    Console.WriteLine($"Total de emergencias ingresadas : {totalEmergencias}");
+    Console.WriteLine($"Total de atenciones realizadas  : {totalAtenciones}");
+    Console.WriteLine("==============================================");
+    Console.ReadKey();
 }
