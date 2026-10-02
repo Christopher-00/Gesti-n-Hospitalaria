@@ -181,7 +181,7 @@ void PrecargarDatos()
     totalMedicos = 3;
 
     pacNombre[0] = "Mario Guevara";
-    pacCedula[0] = "05241234-5";
+    pacCedula[0] = "1234";
     pacEdad[0] = 34;
     pacSexo[0] = "M";
     pacDireccion[0] = "Santa Ana Centro";
@@ -189,7 +189,7 @@ void PrecargarDatos()
     pacIngreso[0] = "2026-09-01 07:30";
 
     pacNombre[1] = "Lucia Beatriz ";
-    pacCedula[1] = "04123987-1";
+    pacCedula[1] = "12345";
     pacEdad[1] = 28;
     pacSexo[1] = "F";
     pacDireccion[1] = "Santa Ana Centro";
