@@ -199,7 +199,7 @@ void PrecargarDatos()
     totalPacientes = 2;
 
     // Citas precargadas
-    citaPaciente[0] = "05241234-5";
+    citaPaciente[0] = "1234";
     citaMedico[0] = "MED-01";
     citaFecha[0] = DateTime.Now.ToString("yyyy-MM-dd");
     citaHora[0] = "09:00";
@@ -208,7 +208,7 @@ void PrecargarDatos()
     totalCitas = 1;
 
     // Atenciones iniciales de prueba
-    atenPaciente[0] = "05241234-5";
+    atenPaciente[0] = "12345";
     atenMedico[0] = "MED-01";
     atenFecha[0] = "2026-09-02 08:30";
     atenDiagnostico[0] = "Gripe comun";
@@ -216,7 +216,7 @@ void PrecargarDatos()
     atenMedicamentos[0] = "Paracetamol 500mg";
     atenEstadoPost[0] = "Dado de alta";
 
-    atenPaciente[1] = "04123987-1";
+    atenPaciente[1] = "1234";
     atenMedico[1] = "MED-02";
     atenFecha[1] = "2026-09-06 11:00";
     atenDiagnostico[1] = "Faringitis";
@@ -1326,7 +1326,7 @@ void MostrarPromedioEdadPacientes()
         suma += pacEdad[i];
 
     double promedio = suma / totalPacientes;
-    Console.WriteLine($"3. Promedio de edad de pacientes registrados: {promedio:F1} anios");
+    Console.WriteLine($"3. Promedio de edad de pacientes registrados: {promedio:F1} años");
 }
 
 void MostrarPacientesAtendidosPorDia()
